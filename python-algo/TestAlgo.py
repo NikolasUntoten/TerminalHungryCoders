@@ -18,10 +18,24 @@ class TestAlgo(gamelib.AlgoCore):
             self.grid_map.append([0]*(j_end - j_start))
             j_start += 1
             j_end -= 1
-        for element in self.grid_map:
-            print(element)
+
+    def convert_list_index_to_board_index(self, y, x):
+        row = 27 - y
+        print(row)
+        if y in range(0,14):
+            col = 13 + x - y
+        else:
+            col = 13 + x - row
+        return [col, row]
 
 
+    def convert_board_index_to_list(self, col, row):
+        y = 27 - row
+        if y in range(0, 14):
+            x = -13 + col + y
+        else:
+            x = -13 + col + row
+        return [y, x]
 
     #def evaluate(self):
         #evaluate self defence
@@ -31,4 +45,6 @@ class TestAlgo(gamelib.AlgoCore):
 
 if __name__ == "__main__":
     algo = TestAlgo()
+    
+
 
