@@ -147,14 +147,18 @@ class AlgoStrategy(gamelib.AlgoCore):
             while game_state.get_resource(game_state.CORES) >= 1.0 and running:
                 # find the min defense square
                 min_loc = [0,0]
-                for x in range(0, 28):
-                    for y in range(0, 14):
+                for x in range(14, len(self.grid_map)):
+                    for y in range(len(self.grid_map[x])):
                         if self.grid_map[x][y] < self.grid_map[min_loc[0]][min_loc[1]] \
                                 and defense_locations[x][y] is defense_type:
                             min_loc = [x, y]
                 # buff said square (if it needs it)
                 if self.grid_map[min_loc[0]][min_loc[1]] < threshold :
-                    game_state.attempt_spawn(defense_type, min_loc)
+                    spawns = game_state.attempt_spawn(unit_type=defense_type,
+                                             locations=self.convert_list_index_to_board_index(min_loc[0], min_loc[1]),
+                                             nums=1)
+                    if spawns > 0:
+                        self.evaluate_self_defence(game_state)
                 else:
                     running = False
 
