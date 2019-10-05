@@ -148,63 +148,52 @@ class AlgoStrategy(gamelib.AlgoCore):
                 if time.time() - start_time > 1:
                     break
                 # find the min defense square
-                min_loc = [0, 0]
                 for x in range(14, len(self.grid_map)):
                     if time.time() - start_time > 1:
                         break
                     for y in range(len(self.grid_map[x])):
                         if time.time() - start_time > 1:
                             break
-                        if self.grid_map[x][y] < self.grid_map[min_loc[0]][min_loc[1]] \
-                                and defense_locations[x][y] is defense_type:
-                            min_loc = [x, y]
-                # buff said square (if it needs it)
-                if self.grid_map[min_loc[0]][min_loc[1]] < threshold \
-                        and min_loc[0] not in defense_holes_x:
-                    if time.time() - start_time > 1:
-                        break
-                    spawns = game_state.attempt_spawn(unit_type=defense_type,
-                                                      locations=self.convert_list_index_to_board_index(min_loc[0],
-                                                                                                       min_loc[1]),
+                        if self.grid_map[x][y] < threshold \
+                                and defense_locations[x - 14][y] is defense_type:
+                            spawns = game_state.attempt_spawn(unit_type=defense_type,
+                                                      locations=self.convert_list_index_to_board_index(x, y),
                                                       num=1)
-                    if spawns > 0:
-                        left_board_index, right_board_index = self.convert_list_index_to_board_index(min_loc[0], min_loc[1])
-                        indices_to_change = [[left_board_index-2, right_board_index - 2],
-                                             [left_board_index-2, right_board_index - 1],
-                                             [left_board_index-2, right_board_index],
-                                             [left_board_index-2, right_board_index+1],
-                                             [left_board_index - 2, right_board_index + 2],
-                                             [left_board_index-1, right_board_index - 2],
-                                             [left_board_index-1, right_board_index - 1],
-                                             [left_board_index-1, right_board_index],
-                                             [left_board_index - 1, right_board_index + 1],
-                                             [left_board_index - 1, right_board_index + 2],
-                                             [left_board_index, right_board_index - 2],
-                                             [left_board_index, right_board_index - 1],
-                                             [left_board_index, right_board_index],
-                                             [left_board_index, right_board_index + 1],
-                                             [left_board_index, right_board_index + 2],
-                                             [left_board_index + 1, right_board_index - 2],
-                                             [left_board_index + 1, right_board_index - 1],
-                                             [left_board_index+1, right_board_index],
-                                             [left_board_index + 1, right_board_index + 1],
-                                             [left_board_index + 1, right_board_index + 2],
-                                             [left_board_index + 2, right_board_index - 2],
-                                             [left_board_index + 2, right_board_index - 1],
-                                             [left_board_index + 2, right_board_index],
-                                             [left_board_index + 2, right_board_index + 1],
-                                             [left_board_index + 2, right_board_index + 2]
-                                             ]
-                        for index in indices_to_change:
-                            if time.time() - start_time > 1:
-                                break
-                            list_index = self.convert_board_index_to_list(index[0], index[1])
-                            if list_index[0] >= 0 and list_index[0] < len(self.grid_map):
-                                if list_index[1] >= 0 and list_index[1] < len(self.grid_map[list_index[0]]):
-                                    self.grid_map[list_index[0]][list_index[1]] += 8
-
-                else:
-                    running = False
+                            if spawns > 0:
+                                left_board_index, right_board_index = self.convert_list_index_to_board_index(x, y)
+                                indices_to_change = [[left_board_index-2, right_board_index - 2],
+                                                     [left_board_index-2, right_board_index - 1],
+                                                     [left_board_index-2, right_board_index],
+                                                     [left_board_index-2, right_board_index+1],
+                                                     [left_board_index - 2, right_board_index + 2],
+                                                     [left_board_index-1, right_board_index - 2],
+                                                     [left_board_index-1, right_board_index - 1],
+                                                     [left_board_index-1, right_board_index],
+                                                     [left_board_index - 1, right_board_index + 1],
+                                                     [left_board_index - 1, right_board_index + 2],
+                                                     [left_board_index, right_board_index - 2],
+                                                     [left_board_index, right_board_index - 1],
+                                                     [left_board_index, right_board_index],
+                                                     [left_board_index, right_board_index + 1],
+                                                     [left_board_index, right_board_index + 2],
+                                                     [left_board_index + 1, right_board_index - 2],
+                                                     [left_board_index + 1, right_board_index - 1],
+                                                     [left_board_index+1, right_board_index],
+                                                     [left_board_index + 1, right_board_index + 1],
+                                                     [left_board_index + 1, right_board_index + 2],
+                                                     [left_board_index + 2, right_board_index - 2],
+                                                     [left_board_index + 2, right_board_index - 1],
+                                                     [left_board_index + 2, right_board_index],
+                                                     [left_board_index + 2, right_board_index + 1],
+                                                     [left_board_index + 2, right_board_index + 2]
+                                                     ]
+                                for index in indices_to_change:
+                                    if time.time() - start_time > 1:
+                                        break
+                                    list_index = self.convert_board_index_to_list(index[0], index[1])
+                                    if list_index[0] >= 0 and list_index[0] < len(self.grid_map):
+                                        if list_index[1] >= 0 and list_index[1] < len(self.grid_map[list_index[0]]):
+                                            self.grid_map[list_index[0]][list_index[1]] += 8
 
     def on_action_frame(self, turn_string):
         """
