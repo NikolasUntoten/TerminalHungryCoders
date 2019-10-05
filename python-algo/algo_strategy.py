@@ -222,16 +222,12 @@ class AlgoStrategy(gamelib.AlgoCore):
             path = game_state.find_path_to_edge(start_location)
             damage = 0
             for location in path:
-                if time.time() - start_time > 1:
-                    break
                 list_location = self.convert_board_index_to_list(location[0], location[1])
                 damage += self.grid_map[list_location[0]][list_location[1]]
             if damage < min_damage or (damage == min_damage and min_path_length < len(path)):
                 min_damage = damage
                 min_path_length = len(path)
                 best_start_location = start_location
-            if time.time() - start_time > 1:
-                break
         return best_start_location, min_damage
 
     # returns count of pings, emps, scramblers in order to be placed.
@@ -241,8 +237,6 @@ class AlgoStrategy(gamelib.AlgoCore):
 
         enemy_bits = game_state.get_resource(game_state.BITS)
         while enemy_bits > 8 and bits > 0:
-            if time.time() - start_time > 1:
-                break
             scramblers += 1
             enemy_bits -= 8
             bits -= 1
