@@ -5,7 +5,6 @@ import warnings
 from sys import maxsize
 import json
 
-
 """
 Most of the algo code you write will be in this file unless you create new
 modules yourself. Start by modifying the 'on_turn' function.
@@ -18,6 +17,7 @@ Advanced strategy tips:
   board states. Though, we recommended making a copy of the map to preserve 
   the actual current map state.
 """
+
 
 class AlgoStrategy(gamelib.AlgoCore):
     def __init__(self):
@@ -41,7 +41,7 @@ class AlgoStrategy(gamelib.AlgoCore):
 
     def convert_list_index_to_board_index(self, y, x):
         row = 27 - y
-        if y in range(0,14):
+        if y in range(0, 14):
             col = 13 + x - y
         else:
             col = 13 + x - row
@@ -60,14 +60,14 @@ class AlgoStrategy(gamelib.AlgoCore):
             for j in range(len(self.grid_map[i])):
                 board_indices = self.convert_list_index_to_board_index(i, j)
                 number_of_attackers = len(game_state.get_attackers(location=board_indices, player_index=0))
-                self.grid_map[i][j] = number_of_attackers*8
-    
+                self.grid_map[i][j] = number_of_attackers * 8
+
     def evaluate_enemy_defence(self, game_state):
         for i in range(0, 14):
             for j in range(len(self.grid_map[i])):
                 board_indices = self.convert_list_index_to_board_index(i, j)
                 number_of_attackers = len(game_state.get_attackers(location=board_indices, player_index=1))
-                self.grid_map[i][j] = number_of_attackers*8
+                self.grid_map[i][j] = number_of_attackers * 8
 
     def on_game_start(self, config):
         """ 
@@ -85,9 +85,6 @@ class AlgoStrategy(gamelib.AlgoCore):
         # This is a good place to do initial setup
         self.scored_on_locations = []
 
-    
-        
-
     def on_turn(self, turn_state):
         """
         This function is called every turn with the game state wrapper as
@@ -98,11 +95,10 @@ class AlgoStrategy(gamelib.AlgoCore):
         """
         game_state = gamelib.GameState(self.config, turn_state)
         gamelib.debug_write('Performing turn {} of your custom algo strategy'.format(game_state.turn_number))
-        game_state.suppress_warnings(True)  #Comment or remove this line to enable warnings.
+        game_state.suppress_warnings(True)  # Comment or remove this line to enable warnings.
         self.starter_strategy(game_state)
         self.evaluate_self_defence(game_state)
         game_state.submit_turn()
-
 
     """
     NOTE: All the methods after this point are part of the sample starter-algo
@@ -113,30 +109,30 @@ class AlgoStrategy(gamelib.AlgoCore):
         defense_locations = []
         defense_priority = [DESTRUCTOR, FILTER, ENCRYPTOR]
         temp = [
-            [0, 0, 0, 6, 16, 6, 0, 0, 0], 
-            [1, 0, 2, 6, 10, 6, 2, 0, 1], 
-            [4, 0, 2, 6, 4, 6, 2, 0, 4], 
-            [5, 1, 3, 5, 0, 5, 3, 1, 5], 
-            [6, 1, 4, 3, 0, 3, 4, 1, 6], 
-            [7, 2, 5, 0, 0, 0, 5, 2, 7], 
-            [8, 2, 4, 0, 0, 0, 4, 2, 8], 
-            [9, 2, 3, 0, 0, 0, 3, 2, 9], 
-            [10, 2, 2, 0, 0, 0, 2, 2, 10], 
+            [0, 0, 0, 6, 16, 6, 0, 0, 0],
+            [1, 0, 2, 6, 10, 6, 2, 0, 1],
+            [4, 0, 2, 6, 4, 6, 2, 0, 4],
+            [5, 1, 3, 5, 0, 5, 3, 1, 5],
+            [6, 1, 4, 3, 0, 3, 4, 1, 6],
+            [7, 2, 5, 0, 0, 0, 5, 2, 7],
+            [8, 2, 4, 0, 0, 0, 4, 2, 8],
+            [9, 2, 3, 0, 0, 0, 3, 2, 9],
+            [10, 2, 2, 0, 0, 0, 2, 2, 10],
             [11, 1, 2, 0, 0, 0, 2, 1, 11],
             [12, 1, 1, 0, 0, 0, 1, 1, 12],
             [13, 1, 0, 0, 0, 0, 0, 1, 13],
-            [0, 0, 0, 0, 28, 0, 0, 0, 0], 
+            [0, 0, 0, 0, 28, 0, 0, 0, 0],
             [0, 0, 0, 0, 28, 0, 0, 0, 0]]
         for row in temp:
             defense_locations.append(
                 ([None] * row[0]) +
-                ([ENCRYPTOR] * row[1]) + 
+                ([ENCRYPTOR] * row[1]) +
                 ([DESTRUCTOR] * row[2]) +
-                ([FILTER] * row[3]) + 
+                ([FILTER] * row[3]) +
                 ([None] * row[4]) +
-                ([FILTER] * row[5]) + 
+                ([FILTER] * row[5]) +
                 ([DESTRUCTOR] * row[6]) +
-                ([ENCRYPTOR] * row[7]) + 
+                ([ENCRYPTOR] * row[7]) +
                 ([None] * row[8]))
 
         threshold = 16.0
@@ -144,18 +140,17 @@ class AlgoStrategy(gamelib.AlgoCore):
             running = True
             while game_state.get_resource(game_state.CORES) >= 1.0 and running:
                 # find the min defense square
-                min_loc = [0,0]
+                min_loc = [0, 0]
                 for x in range(0, 28):
                     for y in range(0, 14):
                         if self.grid_map[x][y] < self.grid_map[min_loc[0]][min_loc[1]] \
                                 and defense_locations[x][y] is defense_type:
                             min_loc = [x, y]
                 # buff said square (if it needs it)
-                if self.grid_map[min_loc[0]][min_loc[1]] < threshold :
+                if self.grid_map[min_loc[0]][min_loc[1]] < threshold:
                     game_state.attempt_spawn(defense_type, min_loc)
                 else:
                     running = False
-
 
     def starter_strategy(self, game_state):
         """
@@ -204,7 +199,7 @@ class AlgoStrategy(gamelib.AlgoCore):
         destructor_locations = [[0, 13], [27, 13], [8, 11], [19, 11], [13, 11], [14, 11]]
         # attempt_spawn will try to spawn units if we have resources, and will check if a blocking unit is already there
         game_state.attempt_spawn(DESTRUCTOR, destructor_locations)
-        
+
         # Place filters in front of destructors to soak up damage for them
         filter_locations = [[8, 12], [19, 12]]
         game_state.attempt_spawn(FILTER, filter_locations)
@@ -217,7 +212,7 @@ class AlgoStrategy(gamelib.AlgoCore):
         """
         for location in self.scored_on_locations:
             # Build destructor one space above so that it doesn't block our own edge spawn locations
-            build_location = [location[0], location[1]+1]
+            build_location = [location[0], location[1] + 1]
             game_state.attempt_spawn(DESTRUCTOR, build_location)
 
     def stall_with_scramblers(self, game_state):
@@ -225,18 +220,19 @@ class AlgoStrategy(gamelib.AlgoCore):
         Send out Scramblers at random locations to defend our base from enemy moving units.
         """
         # We can spawn moving units on our edges so a list of all our edge locations
-        friendly_edges = game_state.game_map.get_edge_locations(game_state.game_map.BOTTOM_LEFT) + game_state.game_map.get_edge_locations(game_state.game_map.BOTTOM_RIGHT)
-        
+        friendly_edges = game_state.game_map.get_edge_locations(
+            game_state.game_map.BOTTOM_LEFT) + game_state.game_map.get_edge_locations(game_state.game_map.BOTTOM_RIGHT)
+
         # Remove locations that are blocked by our own firewalls 
         # since we can't deploy units there.
         deploy_locations = self.filter_blocked_locations(friendly_edges, game_state)
-        
+
         # While we have remaining bits to spend lets send out scramblers randomly.
         while game_state.get_resource(game_state.BITS) >= game_state.type_cost(SCRAMBLER) and len(deploy_locations) > 0:
             # Choose a random deploy location.
             deploy_index = random.randint(0, len(deploy_locations) - 1)
             deploy_location = deploy_locations[deploy_index]
-            
+
             game_state.attempt_spawn(SCRAMBLER, deploy_location)
             """
             We don't have to remove the location since multiple information 
@@ -278,21 +274,23 @@ class AlgoStrategy(gamelib.AlgoCore):
             damage = 0
             for path_location in path:
                 # Get number of enemy destructors that can attack the final location and multiply by destructor damage
-                damage += len(game_state.get_attackers(path_location, 0)) * gamelib.GameUnit(DESTRUCTOR, game_state.config).damage
+                damage += len(game_state.get_attackers(path_location, 0)) * gamelib.GameUnit(DESTRUCTOR,
+                                                                                             game_state.config).damage
             damages.append(damage)
-        
+
         # Now just return the location that takes the least damage
         return location_options[damages.index(min(damages))]
 
-    def detect_enemy_unit(self, game_state, unit_type=None, valid_x = None, valid_y = None):
+    def detect_enemy_unit(self, game_state, unit_type=None, valid_x=None, valid_y=None):
         total_units = 0
         for location in game_state.game_map:
             if game_state.contains_stationary_unit(location):
                 for unit in game_state.game_map[location]:
-                    if unit.player_index == 1 and (unit_type is None or unit.unit_type == unit_type) and (valid_x is None or location[0] in valid_x) and (valid_y is None or location[1] in valid_y):
+                    if unit.player_index == 1 and (unit_type is None or unit.unit_type == unit_type) and (
+                            valid_x is None or location[0] in valid_x) and (valid_y is None or location[1] in valid_y):
                         total_units += 1
         return total_units
-        
+
     def filter_blocked_locations(self, locations, game_state):
         filtered = []
         for location in locations:
