@@ -102,7 +102,7 @@ class AlgoStrategy(gamelib.AlgoCore):
         self.starter_strategy(game_state)
         self.evaluate_self_defence(game_state)
         self.evaluate_enemy_defence(game_state)
-        self.populate_defense(game_state)
+        self.populate_defense(game_state, [13])
         game_state.submit_turn()
 
 
