@@ -62,7 +62,6 @@ class AlgoStrategy(gamelib.AlgoCore):
                 board_indices = self.convert_list_index_to_board_index(i, j)
                 number_of_attackers = len(game_state.get_attackers(location=board_indices, player_index=0))
                 self.grid_map[i][j] = number_of_attackers * 8
-        print(self.grid_map)
 
     def evaluate_enemy_defence(self, game_state):
         for i in range(0, 14):
@@ -70,7 +69,6 @@ class AlgoStrategy(gamelib.AlgoCore):
                 board_indices = self.convert_list_index_to_board_index(i, j)
                 number_of_attackers = len(game_state.get_attackers(location=board_indices, player_index=1))
                 self.grid_map[i][j] = number_of_attackers * 8
-        print(self.grid_map)
 
     def on_game_start(self, config):
         """ 
@@ -195,6 +193,54 @@ class AlgoStrategy(gamelib.AlgoCore):
                 gamelib.debug_write("Got scored on at: {}".format(location))
                 self.scored_on_locations.append(location)
                 gamelib.debug_write("All locations: {}".format(self.scored_on_locations))
+
+    def __place__attackers__(self, game_state):
+        bits = game_state.get_resource(game_state.BITS)
+        if bits < (5 + game_state.turn_number // 10) * 2:
+            return None
+        start_location, damage = self.__find_best_start_location__(game_state)
+        pings, emps, scramblers = self.__find_best_start_unit__(game_state, damage, bits)
+
+        if pings > 0:
+            game_state.attempt_spawn(game_state.PING, start_location, pings)
+        if emps > 0:
+            game_state.attempt_spawn(game_state.EMP, start_location, emps)
+        if scramblers > 0:
+            game_state.attempt_spawn(game_state.SCRAMBLER, start_location, scramblers)
+
+    def __find_best_start_location__(self, game_state):
+        possible_start_locations = game_state.game_map.get_edge_locations(
+            game_state.game_map.BOTTOM_LEFT) + game_state.game_map.get_edge_locations(game_state.game_map.BOTTOM_RIGHT)
+
+        best_start_location = None
+        min_damage = 100000  # damage taken on the path
+        min_path_length = 10000
+        for start_location in possible_start_locations:
+            if game_state.contains_stationary_unit(start_location):
+                continue
+            path = game_state.find_path_to_edge(start_location)
+            damage = sum([8 * len(game_state.get_attackers(location, 0)) for location in path])
+            if damage < min_damage or (damage == min_damage and min_path_length < len(path)):
+                min_damage = damage
+                min_path_length = len(path)
+                best_start_location = start_location
+        return best_start_location, min_damage
+
+    # returns count of pings, emps, scramblers in order to be placed.
+    def __find_best_start_unit__(self, game_state, damage, bits):
+        scramblers = 0
+        bits = int(bits)
+
+        enemy_bits = game_state.get_resource(game_state.BITS)
+        while enemy_bits > 8 and bits > 0:
+            scramblers += 1
+            enemy_bits -= 8
+            bits -= 1
+
+        if damage < 16:
+            return bits, 0, scramblers
+        count = bits // 4
+        return count + bits % 4, count, scramblers
 
 
 if __name__ == "__main__":
