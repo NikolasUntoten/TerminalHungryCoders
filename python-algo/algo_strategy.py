@@ -61,14 +61,14 @@ class AlgoStrategy(gamelib.AlgoCore):
                 board_indices = self.convert_list_index_to_board_index(i, j)
                 number_of_attackers = len(game_state.get_attackers(location=board_indices, player_index=0))
                 self.grid_map[i][j] = number_of_attackers*8
-    
+        print(self.grid_map)
     def evaluate_enemy_defence(self, game_state):
         for i in range(0, 14):
             for j in range(len(self.grid_map[i])):
                 board_indices = self.convert_list_index_to_board_index(i, j)
                 number_of_attackers = len(game_state.get_attackers(location=board_indices, player_index=1))
                 self.grid_map[i][j] = number_of_attackers*8
-
+        print(self.grid_map)
     def on_game_start(self, config):
         """ 
         Read in config and perform any initial setup here 
