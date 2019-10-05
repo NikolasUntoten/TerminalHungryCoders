@@ -94,12 +94,13 @@ class AlgoStrategy(gamelib.AlgoCore):
         unit deployments, and transmitting your intended deployments to the
         game engine.
         """
+        start_time = time.time()
         game_state = gamelib.GameState(self.config, turn_state)
         gamelib.debug_write('Performing turn {} of your custom algo strategy'.format(game_state.turn_number))
         game_state.suppress_warnings(True)  # Comment or remove this line to enable warnings.
         self.evaluate_self_defence(game_state)
         self.evaluate_enemy_defence(game_state)
-        self.populate_defense(game_state, [13])
+        self.populate_defense(game_state, [13], start_time)
         game_state.submit_turn()
 
     """
@@ -107,7 +108,7 @@ class AlgoStrategy(gamelib.AlgoCore):
     strategy and can safely be replaced for your custom algo.
     """
 
-    def populate_defense(self, game_state, defense_holes_x):
+    def populate_defense(self, game_state, defense_holes_x, start_time):
         defense_locations = []
         defense_priority = [DESTRUCTOR, FILTER, ENCRYPTOR]
         temp = [
@@ -138,7 +139,6 @@ class AlgoStrategy(gamelib.AlgoCore):
                 ([None] * row[8]))
 
         threshold = 16.0
-        start_time = time.time()
         for defense_type in defense_priority:
             if time.time() - start_time > 1.9:
                 break
@@ -194,12 +194,12 @@ class AlgoStrategy(gamelib.AlgoCore):
                 self.scored_on_locations.append(location)
                 gamelib.debug_write("All locations: {}".format(self.scored_on_locations))
 
-    def __place__attackers__(self, game_state):
+    def __place__attackers__(self, game_state, start_time):
         bits = game_state.get_resource(game_state.BITS)
         if bits < (5 + game_state.turn_number // 10) * 2:
             return None
-        start_location, damage = self.__find_best_start_location__(game_state)
-        pings, emps, scramblers = self.__find_best_start_unit__(game_state, damage, bits)
+        start_location, damage = self.__find_best_start_location__(game_state, start_time)
+        pings, emps, scramblers = self.__find_best_start_unit__(game_state, damage, bits, start_time)
 
         if pings > 0:
             game_state.attempt_spawn(game_state.PING, start_location, pings)
@@ -208,7 +208,7 @@ class AlgoStrategy(gamelib.AlgoCore):
         if scramblers > 0:
             game_state.attempt_spawn(game_state.SCRAMBLER, start_location, scramblers)
 
-    def __find_best_start_location__(self, game_state):
+    def __find_best_start_location__(self, game_state, start_time):
         possible_start_locations = game_state.game_map.get_edge_locations(
             game_state.game_map.BOTTOM_LEFT) + game_state.game_map.get_edge_locations(game_state.game_map.BOTTOM_RIGHT)
 
@@ -216,10 +216,17 @@ class AlgoStrategy(gamelib.AlgoCore):
         min_damage = 100000  # damage taken on the path
         min_path_length = 10000
         for start_location in possible_start_locations:
+            if time.time() - start_time > 1.9:
+                break
             if game_state.contains_stationary_unit(start_location):
                 continue
             path = game_state.find_path_to_edge(start_location)
-            damage = sum([8 * len(game_state.get_attackers(location, 0)) for location in path])
+            damage = 0
+            for location in path:
+                if time.time() - start_time > 1.9:
+                    break
+                list_location = self.convert_board_index_to_list(location[0], location[1])
+                damage += self.grid_map[list_location[0]][list_location[1]]
             if damage < min_damage or (damage == min_damage and min_path_length < len(path)):
                 min_damage = damage
                 min_path_length = len(path)
@@ -227,12 +234,14 @@ class AlgoStrategy(gamelib.AlgoCore):
         return best_start_location, min_damage
 
     # returns count of pings, emps, scramblers in order to be placed.
-    def __find_best_start_unit__(self, game_state, damage, bits):
+    def __find_best_start_unit__(self, game_state, damage, bits, start_time):
         scramblers = 0
         bits = int(bits)
 
         enemy_bits = game_state.get_resource(game_state.BITS)
         while enemy_bits > 8 and bits > 0:
+            if time.time() - start_time > 1.9:
+                break
             scramblers += 1
             enemy_bits -= 8
             bits -= 1
