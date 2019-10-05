@@ -101,6 +101,7 @@ class AlgoStrategy(gamelib.AlgoCore):
         self.evaluate_self_defence(game_state)
         self.evaluate_enemy_defence(game_state)
         self.populate_defense(game_state, [13], start_time)
+        self.__place__attackers__(game_state, start_time)
         game_state.submit_turn()
 
     """
@@ -140,19 +141,19 @@ class AlgoStrategy(gamelib.AlgoCore):
 
         threshold = 16.0
         for defense_type in defense_priority:
-            if time.time() - start_time > 1.9:
+            if time.time() - start_time > 1:
                 break
             running = True
             while game_state.get_resource(game_state.CORES) >= 1.0 and running:
-                if time.time() - start_time > 1.9:
+                if time.time() - start_time > 1:
                     break
                 # find the min defense square
                 min_loc = [0, 0]
                 for x in range(14, len(self.grid_map)):
-                    if time.time() - start_time > 1.9:
+                    if time.time() - start_time > 1:
                         break
                     for y in range(len(self.grid_map[x])):
-                        if time.time() - start_time > 1.9:
+                        if time.time() - start_time > 1:
                             break
                         if self.grid_map[x][y] < self.grid_map[min_loc[0]][min_loc[1]] \
                                 and defense_locations[x][y] is defense_type:
@@ -160,14 +161,14 @@ class AlgoStrategy(gamelib.AlgoCore):
                 # buff said square (if it needs it)
                 if self.grid_map[min_loc[0]][min_loc[1]] < threshold \
                         and min_loc[0] not in defense_holes_x:
-                    if time.time() - start_time > 1.9:
+                    if time.time() - start_time > 1:
                         break
                     spawns = game_state.attempt_spawn(unit_type=defense_type,
                                                       locations=self.convert_list_index_to_board_index(min_loc[0],
                                                                                                        min_loc[1]),
                                                       num=1)
                     if spawns > 0:
-                        if time.time() - start_time > 1.9:
+                        if time.time() - start_time > 1:
                             break
                         self.evaluate_self_defence(game_state)
                 else:
@@ -216,14 +217,14 @@ class AlgoStrategy(gamelib.AlgoCore):
         min_damage = 100000  # damage taken on the path
         min_path_length = 10000
         for start_location in possible_start_locations:
-            if time.time() - start_time > 1.9:
+            if time.time() - start_time > 1:
                 break
             if game_state.contains_stationary_unit(start_location):
                 continue
             path = game_state.find_path_to_edge(start_location)
             damage = 0
             for location in path:
-                if time.time() - start_time > 1.9:
+                if time.time() - start_time > 1:
                     break
                 list_location = self.convert_board_index_to_list(location[0], location[1])
                 damage += self.grid_map[list_location[0]][list_location[1]]
@@ -240,7 +241,7 @@ class AlgoStrategy(gamelib.AlgoCore):
 
         enemy_bits = game_state.get_resource(game_state.BITS)
         while enemy_bits > 8 and bits > 0:
-            if time.time() - start_time > 1.9:
+            if time.time() - start_time > 1:
                 break
             scramblers += 1
             enemy_bits -= 8
