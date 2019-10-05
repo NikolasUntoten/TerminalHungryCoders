@@ -102,6 +102,52 @@ class AlgoStrategy(gamelib.AlgoCore):
     strategy and can safely be replaced for your custom algo.
     """
 
+    def populate_defense(self, game_state, defense_holes_x):
+        defense_locations = [];
+        defense_priority = [DESTRUCTOR, FILTER, ENCRYPTOR];
+        temp = [
+            [0, 0, 0, 6, 16, 6, 0, 0, 0], 
+            [1, 0, 2, 6, 10, 6, 2, 0, 1], 
+            [4, 0, 2, 6, 4, 6, 2, 0, 4], 
+            [5, 1, 3, 5, 0, 5, 3, 1, 5], 
+            [6, 1, 4, 3, 0, 3, 4, 1, 6], 
+            [7, 2, 5, 0, 0, 0, 5, 2, 7], 
+            [8, 2, 4, 0, 0, 0, 4, 2, 8], 
+            [9, 2, 3, 0, 0, 0, 3, 2, 9], 
+            [10, 2, 2, 0, 0, 0, 2, 2, 10], 
+            [11, 1, 2, 0, 0, 0, 2, 1, 11],
+            [12, 1, 1, 0, 0, 0, 1, 1, 12],
+            [13, 1, 0, 0, 0, 0, 0, 1, 13],
+            [0, 0, 0, 0, 28, 0, 0, 0, 0], 
+            [0, 0, 0, 0, 28, 0, 0, 0, 0]];
+        for row in temp:
+            defense_locations.append(
+                ([NONE] * row[0]) + 
+                ([ENCRYPTOR] * row[1]) + 
+                ([DESCTRUCTOR] * row[2]) + 
+                ([FILTER] * row[3]) + 
+                ([NONE] * row[4]) + 
+                ([FILTER] * row[5]) + 
+                ([DESCTRUCTOR] * row[6]) + 
+                ([ENCRYPTOR] * row[7]) + 
+                ([NONE] * row[8]));
+
+        threshold = 16.0;
+        for defense_type in defense_priority:
+            running = true
+            while game_state.get_resource(CORES) >= 1.0 and running:
+                # find the min defense square
+                for x in range(0, 28):
+                    for y in range(0, 14):
+                        if this.grid_map[[x][y]] < this.grid_map[min_loc[0]][min_loc[1]] \
+                            and defense_locations[x][y] is defense_type:
+                            min_loc = [x, y];
+                # buff said square (if it needs it)
+                if this.grid_map[min_loc[0]][min_loc[1]] < threshold :
+                    game_state.attempt_spawn(defense_type, min_loc);
+                else
+                    running = false
+
 
     def starter_strategy(self, game_state):
         """
