@@ -110,8 +110,8 @@ class AlgoStrategy(gamelib.AlgoCore):
     """
 
     def populate_defense(self, game_state, defense_holes_x):
-        defense_locations = [];
-        defense_priority = [DESTRUCTOR, FILTER, ENCRYPTOR];
+        defense_locations = []
+        defense_priority = [DESTRUCTOR, FILTER, ENCRYPTOR]
         temp = [
             [0, 0, 0, 6, 16, 6, 0, 0, 0], 
             [1, 0, 2, 6, 10, 6, 2, 0, 1], 
@@ -126,34 +126,35 @@ class AlgoStrategy(gamelib.AlgoCore):
             [12, 1, 1, 0, 0, 0, 1, 1, 12],
             [13, 1, 0, 0, 0, 0, 0, 1, 13],
             [0, 0, 0, 0, 28, 0, 0, 0, 0], 
-            [0, 0, 0, 0, 28, 0, 0, 0, 0]];
+            [0, 0, 0, 0, 28, 0, 0, 0, 0]]
         for row in temp:
             defense_locations.append(
-                ([NONE] * row[0]) + 
+                ([None] * row[0]) +
                 ([ENCRYPTOR] * row[1]) + 
-                ([DESCTRUCTOR] * row[2]) + 
+                ([DESTRUCTOR] * row[2]) +
                 ([FILTER] * row[3]) + 
-                ([NONE] * row[4]) + 
+                ([None] * row[4]) +
                 ([FILTER] * row[5]) + 
-                ([DESCTRUCTOR] * row[6]) + 
+                ([DESTRUCTOR] * row[6]) +
                 ([ENCRYPTOR] * row[7]) + 
-                ([NONE] * row[8]));
+                ([None] * row[8]))
 
-        threshold = 16.0;
+        threshold = 16.0
         for defense_type in defense_priority:
-            running = true
-            while game_state.get_resource(CORES) >= 1.0 and running:
+            running = True
+            while game_state.get_resource(game_state.CORES) >= 1.0 and running:
                 # find the min defense square
+                min_loc = [0,0]
                 for x in range(0, 28):
                     for y in range(0, 14):
-                        if this.grid_map[[x][y]] < this.grid_map[min_loc[0]][min_loc[1]] \
-                            and defense_locations[x][y] is defense_type:
-                            min_loc = [x, y];
+                        if self.grid_map[x][y] < self.grid_map[min_loc[0]][min_loc[1]] \
+                                and defense_locations[x][y] is defense_type:
+                            min_loc = [x, y]
                 # buff said square (if it needs it)
-                if this.grid_map[min_loc[0]][min_loc[1]] < threshold :
-                    game_state.attempt_spawn(defense_type, min_loc);
-                else
-                    running = false
+                if self.grid_map[min_loc[0]][min_loc[1]] < threshold :
+                    game_state.attempt_spawn(defense_type, min_loc)
+                else:
+                    running = False
 
 
     def starter_strategy(self, game_state):
