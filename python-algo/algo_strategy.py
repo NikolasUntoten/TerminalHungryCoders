@@ -101,6 +101,8 @@ class AlgoStrategy(gamelib.AlgoCore):
         game_state.suppress_warnings(True)  #Comment or remove this line to enable warnings.
         self.starter_strategy(game_state)
         self.evaluate_self_defence(game_state)
+        self.evaluate_enemy_defence(game_state)
+        self.populate_defense(game_state)
         game_state.submit_turn()
 
 
