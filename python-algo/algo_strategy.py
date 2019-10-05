@@ -203,11 +203,11 @@ class AlgoStrategy(gamelib.AlgoCore):
         pings, emps, scramblers = self.__find_best_start_unit__(game_state, damage, bits, start_time)
 
         if pings > 0:
-            game_state.attempt_spawn(game_state.PING, start_location, pings)
+            game_state.attempt_spawn(PING, start_location, pings)
         if emps > 0:
-            game_state.attempt_spawn(game_state.EMP, start_location, emps)
+            game_state.attempt_spawn(EMP, start_location, emps)
         if scramblers > 0:
-            game_state.attempt_spawn(game_state.SCRAMBLER, start_location, scramblers)
+            game_state.attempt_spawn(SCRAMBLER, start_location, scramblers)
 
     def __find_best_start_location__(self, game_state, start_time):
         possible_start_locations = game_state.game_map.get_edge_locations(
