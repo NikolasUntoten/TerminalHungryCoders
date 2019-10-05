@@ -153,7 +153,8 @@ class AlgoStrategy(gamelib.AlgoCore):
                                 and defense_locations[x][y] is defense_type:
                             min_loc = [x, y]
                 # buff said square (if it needs it)
-                if self.grid_map[min_loc[0]][min_loc[1]] < threshold :
+                if self.grid_map[min_loc[0]][min_loc[1]] < threshold
+                    and min_loc[0] not in defense_holes_x :
                     spawns = game_state.attempt_spawn(unit_type=defense_type,
                                              locations=self.convert_list_index_to_board_index(min_loc[0], min_loc[1]),
                                              num=1)
