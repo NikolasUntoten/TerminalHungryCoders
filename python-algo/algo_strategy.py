@@ -217,8 +217,6 @@ class AlgoStrategy(gamelib.AlgoCore):
         min_damage = 100000  # damage taken on the path
         min_path_length = 10000
         for start_location in possible_start_locations:
-            if time.time() - start_time > 1:
-                break
             if game_state.contains_stationary_unit(start_location):
                 continue
             path = game_state.find_path_to_edge(start_location)
@@ -232,6 +230,8 @@ class AlgoStrategy(gamelib.AlgoCore):
                 min_damage = damage
                 min_path_length = len(path)
                 best_start_location = start_location
+            if time.time() - start_time > 1:
+                break
         return best_start_location, min_damage
 
     # returns count of pings, emps, scramblers in order to be placed.
