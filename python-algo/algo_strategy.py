@@ -58,9 +58,16 @@ class AlgoStrategy(gamelib.AlgoCore):
     def evaluate_self_defence(self, game_state):
         for i in range(14, len(self.grid_map)):
             for j in range(len(self.grid_map[i])):
-                board_indices = self.convert_list_index_to_board_index(i,j)
-                if game_state.contains_stationary_unit(location=board_indices):
-                    print("here")
+                board_indices = self.convert_list_index_to_board_index(i, j)
+                number_of_attackers = len(game_state.get_attackers(location=board_indices, player_index=0))
+                self.grid_map[i][j] = number_of_attackers*8
+    
+    def evaluate_enemy_defence(self, game_state):
+        for i in range(0, 14):
+            for j in range(len(self.grid_map[i])):
+                board_indices = self.convert_list_index_to_board_index(i, j)
+                number_of_attackers = len(game_state.get_attackers(location=board_indices, player_index=1))
+                self.grid_map[i][j] = number_of_attackers*8
 
     def on_game_start(self, config):
         """ 
