@@ -168,9 +168,41 @@ class AlgoStrategy(gamelib.AlgoCore):
                                                                                                        min_loc[1]),
                                                       num=1)
                     if spawns > 0:
-                        if time.time() - start_time > 1:
-                            break
-                        self.evaluate_self_defence(game_state)
+                        left_board_index, right_board_index = self.convert_list_index_to_board_index(min_loc[0], min_loc[1])
+                        indices_to_change = [[left_board_index-2, right_board_index - 2],
+                                             [left_board_index-2, right_board_index - 1],
+                                             [left_board_index-2, right_board_index],
+                                             [left_board_index-2, right_board_index+1],
+                                             [left_board_index - 2, right_board_index + 2],
+                                             [left_board_index-1, right_board_index - 2],
+                                             [left_board_index-1, right_board_index - 1],
+                                             [left_board_index-1, right_board_index],
+                                             [left_board_index - 1, right_board_index + 1],
+                                             [left_board_index - 1, right_board_index + 2],
+                                             [left_board_index, right_board_index - 2],
+                                             [left_board_index, right_board_index - 1],
+                                             [left_board_index, right_board_index],
+                                             [left_board_index, right_board_index + 1],
+                                             [left_board_index, right_board_index + 2],
+                                             [left_board_index + 1, right_board_index - 2],
+                                             [left_board_index + 1, right_board_index - 1],
+                                             [left_board_index+1, right_board_index],
+                                             [left_board_index + 1, right_board_index + 1],
+                                             [left_board_index + 1, right_board_index + 2],
+                                             [left_board_index + 2, right_board_index - 2],
+                                             [left_board_index + 2, right_board_index - 1],
+                                             [left_board_index + 2, right_board_index],
+                                             [left_board_index + 2, right_board_index + 1],
+                                             [left_board_index + 2, right_board_index + 2]
+                                             ]
+                        for index in indices_to_change:
+                            if time.time() - start_time > 1:
+                                break
+                            list_index = self.convert_board_index_to_list(index[0], index[1])
+                            if list_index[0] >= 0 and list_index[0] < len(self.grid_map):
+                                if list_index[1] >= 0 and list_index[1] < len(self.grid_map[list_index[0]]):
+                                    self.grid_map[list_index[0]][list_index[1]] += 8
+
                 else:
                     running = False
 
