@@ -4,6 +4,7 @@ import math
 import warnings
 from sys import maxsize
 import json
+import time
 
 """
 Most of the algo code you write will be in this file unless you create new
@@ -98,6 +99,8 @@ class AlgoStrategy(gamelib.AlgoCore):
         game_state.suppress_warnings(True)  # Comment or remove this line to enable warnings.
         self.starter_strategy(game_state)
         self.evaluate_self_defence(game_state)
+        self.evaluate_enemy_defence(game_state)
+        self.populate_defense(game_state, [13])
         game_state.submit_turn()
 
     """
@@ -136,19 +139,38 @@ class AlgoStrategy(gamelib.AlgoCore):
                 ([None] * row[8]))
 
         threshold = 16.0
+        start_time = time.time()
         for defense_type in defense_priority:
+            if time.time() - start_time > 1.9:
+                break
             running = True
             while game_state.get_resource(game_state.CORES) >= 1.0 and running:
+                if time.time() - start_time > 1.9:
+                    break
                 # find the min defense square
                 min_loc = [0, 0]
-                for x in range(0, 28):
-                    for y in range(0, 14):
+                for x in range(14, len(self.grid_map)):
+                    if time.time() - start_time > 1.9:
+                        break
+                    for y in range(len(self.grid_map[x])):
+                        if time.time() - start_time > 1.9:
+                            break
                         if self.grid_map[x][y] < self.grid_map[min_loc[0]][min_loc[1]] \
                                 and defense_locations[x][y] is defense_type:
                             min_loc = [x, y]
                 # buff said square (if it needs it)
-                if self.grid_map[min_loc[0]][min_loc[1]] < threshold:
-                    game_state.attempt_spawn(defense_type, min_loc)
+                if self.grid_map[min_loc[0]][min_loc[1]] < threshold \
+                        and min_loc[0] not in defense_holes_x:
+                    if time.time() - start_time > 1.9:
+                        break
+                    spawns = game_state.attempt_spawn(unit_type=defense_type,
+                                                      locations=self.convert_list_index_to_board_index(min_loc[0],
+                                                                                                       min_loc[1]),
+                                                      num=1)
+                    if spawns > 0:
+                        if time.time() - start_time > 1.9:
+                            break
+                        self.evaluate_self_defence(game_state)
                 else:
                     running = False
 
