@@ -235,11 +235,11 @@ class AlgoStrategy(gamelib.AlgoCore):
         pings, emps, scramblers = self.__find_best_start_unit__(game_state, damage, bits, start_time)
 
         if pings > 0:
-            game_state.attempt_spawn(game_state.PING, start_location, pings)
+            game_state.attempt_spawn(PING, start_location, pings)
         if emps > 0:
-            game_state.attempt_spawn(game_state.EMP, start_location, emps)
+            game_state.attempt_spawn(EMP, start_location, emps)
         if scramblers > 0:
-            game_state.attempt_spawn(game_state.SCRAMBLER, start_location, scramblers)
+            game_state.attempt_spawn(SCRAMBLER, start_location, scramblers)
 
     def __find_best_start_location__(self, game_state, start_time):
         possible_start_locations = game_state.game_map.get_edge_locations(
@@ -249,15 +249,11 @@ class AlgoStrategy(gamelib.AlgoCore):
         min_damage = 100000  # damage taken on the path
         min_path_length = 10000
         for start_location in possible_start_locations:
-            if time.time() - start_time > 1:
-                break
             if game_state.contains_stationary_unit(start_location):
                 continue
             path = game_state.find_path_to_edge(start_location)
             damage = 0
             for location in path:
-                if time.time() - start_time > 1:
-                    break
                 list_location = self.convert_board_index_to_list(location[0], location[1])
                 damage += self.grid_map[list_location[0]][list_location[1]]
             if damage < min_damage or (damage == min_damage and min_path_length < len(path)):
@@ -273,8 +269,6 @@ class AlgoStrategy(gamelib.AlgoCore):
 
         enemy_bits = game_state.get_resource(game_state.BITS)
         while enemy_bits > 8 and bits > 0:
-            if time.time() - start_time > 1:
-                break
             scramblers += 1
             enemy_bits -= 8
             bits -= 1
