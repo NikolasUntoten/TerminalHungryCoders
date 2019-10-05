@@ -101,6 +101,7 @@ class AlgoStrategy(gamelib.AlgoCore):
         self.evaluate_self_defence(game_state)
         self.evaluate_enemy_defence(game_state)
         self.populate_defense(game_state, [13])
+        self.__place__attackers__()
         game_state.submit_turn()
 
     """
@@ -341,7 +342,7 @@ class AlgoStrategy(gamelib.AlgoCore):
                 self.scored_on_locations.append(location)
                 gamelib.debug_write("All locations: {}".format(self.scored_on_locations))
 
-    def __place__attackers__(self, game_state):
+    def __place_attackers__(self, game_state):
         bits = game_state.get_resource(game_state.BITS)
         if bits < (5 + game_state.turn_number // 10) * 2:
             return None
